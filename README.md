@@ -10,7 +10,7 @@
 * Scan-Time Crypter (FUD)
 
 ### Requirements
-* Stub Coded In C# 2.0
+* Stub Coded In .NET 2.0
 * Mono.Cecil.dll
 * Dissembler Lib.dll
 * Bunifu_UI_v1.52.dll
