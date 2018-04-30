@@ -41,3 +41,5 @@ https://github.com/jbevain/cecil
 I really appreciate all kinds of feedback and contributions.
 
 This project completed about a year ago and the purpose was only training.
+
+Also, I should say its not coded clean, its too dirty :D
